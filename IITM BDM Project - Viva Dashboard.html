@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waters of India: Pollution & Quality Dashboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,600&display=swap">
+  <style>
+    :root {
+      --primary-accent: #38bdf8;
+      --background-gradient: linear-gradient(180deg, rgba(30,41,59,0.7) 0%, rgba(2,6,23,0.85) 100%);
+      --section-background: rgba(15,23,42,0.92);
+      --card-background: rgba(30,41,59,0.92);
+      --border-radius: 12px;
+      --shadow: 0 4px 26px rgba(0,0,0,0.14);
+      --max-width: 1100px;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --section-gap: 56px;
+    }
+    body {
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      color: var(--text-primary);
+      background: url('https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/ab888a97-ec45-49c9-a7cb-67ce85564bc9') center/cover fixed;
+      background-blend-mode: darken;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    .main-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 32px;
+      background: var(--background-gradient);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    h1, h2, h3 {
+      color: var(--primary-accent);
+      font-weight: 600;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.55);
+    }
+    h1 {
+      font-size: 2.7em;
+      margin-bottom: 0.1em;
+    }
+    h2 {
+      font-size: 2em;
+      margin-bottom: 0.3em;
+    }
+    h4 {
+      color: var(--primary-accent);
+      margin-top: 0;
+      margin-bottom: 0.8em;
+    }
+    .section {
+      margin-bottom: var(--section-gap);
+      background: var(--section-background);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2em;
+      position: relative;
+      overflow: auto;
+    }
+    .section-title {
+      margin-top: 0;
+      margin-bottom: 1em;
+      letter-spacing: 1px;
+    }
+    .section-desc {
+      color: var(--text-secondary);
+      margin-bottom: 18px;
+    }
+    .badge-link {
+      display: inline-block;
+      margin-right: 8px;
+      margin-bottom: 7px;
+      padding: 6px 18px;
+      border-radius: 18px;
+      background: var(--primary-accent);
+      color: #0f172a;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      font-size: 1em;
+    }
+    .badge-link:hover {
+      background: #0ea5e9;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      background: var(--card-background);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(56,189,248, 0.09);
+      color: var(--text-primary);
+    }
+    th {
+      background-color: #1e293b;
+      color: var(--primary-accent);
+      border-bottom: 2px solid var(--primary-accent);
+      font-size: 1.01em;
+      font-weight: 500;
+    }
+    .card {
+      background: var(--card-background);
+      border-radius: 9px;
+      box-shadow: var(--shadow);
+      padding: 1em;
+      margin-bottom: 1.2em;
+      color: var(--text-secondary);
+    }
+    .chart-img {
+      max-width: 100%;
+      width: 580px;
+      height: auto;
+      display: block;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      background: #212d3c;
+      box-shadow: 0 4px 12px rgba(30,41,59,0.25);
+      border: 1px solid rgba(56,189,248,0.10);
+    }
+    .caption {
+      color: var(--text-secondary);
+      margin-top: -5px;
+      margin-bottom: 11px;
+      font-size: 0.97em;
+      font-style: italic;
+      text-align: left;
+    }
+    ul {
+      margin-left: 1.8em;
+      margin-bottom: 1em;
+    }
+    ul li {
+      margin-bottom: 0.6em;
+      color: var(--text-secondary);
+    }
+    .columns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .col {
+      flex: 1;
+      min-width: 280px;
+    }
+    a {
+      color: var(--primary-accent);
+      text-decoration: underline;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    a:hover {
+      color: #0ea5e9;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid rgba(56,189,248,0.20);
+      margin: 2em 0;
+    }
+    .contact-info {
+      background: var(--card-background);
+      border-left: 4px solid var(--primary-accent);
+      padding: 1.2em;
+      border-radius: 6px;
+      margin-top: 1.5em;
+    }
+    .contact-info p {
+      color: var(--text-secondary);
+      margin: 0.5em 0;
+    }
+    @media (max-width: 1020px) {
+      .main-container {padding: 14px;}
+      .columns {flex-direction: column;}
+      .chart-img {width: 98vw; max-width: 400px;}
+      table {font-size: 0.96em;}
+    }
+    @media (max-width: 650px) {
+      h1 {font-size: 2em;}
+      h2 {font-size: 1.3em;}
+      .main-container {padding: 5px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+
+    <!-- Home Section -->
+    <div class="section" id="home">
+      <h1>Waters of India</h1>
+      <div class="section-desc">
+        <strong>A Data-Driven Analysis of Pollution and Water Quality for Strategic Intervention</strong><br>
+        <span>BDM Capstone Project | Jnanadyuti Patra (Roll No: 24f1002349) | IIT Madras</span>
+      </div>
+    </div>
+
+    <!-- Dataset Overview Section -->
+    <div class="section" id="dataset">
+      <h2 class="section-title">Dataset Overview</h2>
+      <div class="section-desc">
+        Comprehensive water quality records (2021-2023) sourced from CPCB, covering 2,901 samples from 194 stations across 17 Indian states and 11 water body types. Each entry analyzes physical, chemical, and biological parameters across the sampled locations.
+      </div>
+      <div>
+        <a class="badge-link" href="https://www.kaggle.com/datasets/rishabchitloor/indian-water-quality-data-2021-2023" target="_blank">Original Kaggle Database</a>
+        <a class="badge-link" href="https://docs.google.com/spreadsheets/d/1R5ocuS49A0c5EwfoTvtEfP39BIwNTvE7t0piHV87ZPo/edit?pli=1&gid=737329061" target="_blank">Working Dataset (Google Sheets)</a>
+      </div>
+      <table>
+        <tr><th>Records</th><td>2,901</td></tr>
+        <tr><th>States</th><td>17</td></tr>
+        <tr><th>Monitoring Stations</th><td>194</td></tr>
+        <tr><th>Water Body Types</th><td>11 (River, Drain, Canal, Pond, Lake, Beach, Sea, Creek, STP, Marine, WTP)</td></tr>
+        <tr><th>Parameters Analyzed</th><td>10+ (BOD, pH, Conductivity, Coliforms, etc.)</td></tr>
+        <tr><th>Time Period</th><td>2021-2023</td></tr>
+      </table>
+    </div>
+
+    <!-- Key Water Quality Parameters Section -->
+    <div class="section" id="parameters">
+      <h2 class="section-title">Key Water Quality Parameters</h2>
+      <div class="section-desc">
+        The following indicators are crucial for tracking pollution and public health risks. This table presents descriptive statistics from the official report showing average maximum values by state for each key parameter.
+      </div>
+      <table>
+        <tr>
+          <th>State</th>
+          <th>Avg pH</th>
+          <th>BOD (mg/L)</th>
+          <th>Conductivity (μmho/cm)</th>
+          <th>Nitrate-N (mg/L)</th>
+          <th>Total Coliform (MPN/100ml)</th>
+          <th>Stations</th>
+        </tr>
+        <tr>
+          <td><strong>DELHI</strong></td><td>7.77</td><td>61.50</td><td>1731</td><td>0.85</td><td>1.4E+07</td><td>3</td>
+        </tr>
+        <tr>
+          <td>TAMIL NADU</td><td>7.90</td><td>18.00</td><td>1563</td><td>1.00</td><td>2.2E+04</td><td>1</td>
+        </tr>
+        <tr>
+          <td>TELANGANA</td><td>9.40</td><td>12.87</td><td>1186</td><td>9.60</td><td>419</td><td>3</td>
+        </tr>
+        <tr>
+          <td>MAHARASHTRA</td><td>7.77</td><td>11.33</td><td>2764</td><td>3.00</td><td>374</td><td>3</td>
+        </tr>
+        <tr>
+          <td>MADHYA PRADESH</td><td>8.31</td><td>7.16</td><td>883</td><td>6.34</td><td>99,422</td><td>8</td>
+        </tr>
+        <tr>
+          <td>ODISHA</td><td>7.70</td><td>8.00</td><td>717</td><td>9.70</td><td>160,000</td><td>1</td>
+        </tr>
+        <tr>
+          <td>ASSAM</td><td>7.60</td><td>4.23</td><td>195</td><td>1.75</td><td>1,641</td><td>46</td>
+        </tr>
+        <tr>
+          <td>UTTAR PRADESH</td><td>7.50</td><td>1.00</td><td>201</td><td>0.30</td><td>2</td><td>1</td>
+        </tr>
+      </table>
+      <div class="caption"><strong>Table Source:</strong> Descriptive Statistics extracted from official BDM Final Report. Highlights include Delhi's exceptionally high BOD (61.50 mg/L) and Total Coliform (1.4E+07 MPN/100ml), indicating severe organic and bacteriological contamination.</div>
+    </div>
+
+    <!-- Data Cleaning & Preparation Section -->
+    <div class="section" id="cleaning">
+      <h2 class="section-title">Data Cleaning & Preparation</h2>
+      <div class="section-desc">
+        Prior to analysis, the dataset underwent rigorous cleaning procedures to ensure validity, consistency, and comparability across states and monitoring stations. This section details the methods applied to transform raw CPCB data into a reliable foundation for analytical work.
+      </div>
+      <ul>
+        <li><strong>Missing Value Imputation:</strong> Utilized mean/median imputation techniques for each state to preserve geographic patterns</li>
+        <li><strong>Standardization of Nomenclature:</strong> Unified station names, water body classifications, and parameter units</li>
+        <li><strong>Outlier Detection & Validation:</strong> Applied statistical methods (IQR, Z-score) to identify and validate anomalies</li>
+        <li><strong>Temporal Filtering:</strong> Segregated data by year (2021-2023) for temporal consistency</li>
+        <li><strong>Geographic & Categorical Segregation:</strong> Organized records by state, monitoring station, and water body type</li>
+        <li><strong>Final Dataset Status:</strong> 2,901 validated records ready for robust multivariate analysis</li>
+      </ul>
+      <div class="card">
+        <h4>Cleaned Data Sample (Head of Cleaned_Indian_water_data)</h4>
+        <table>
+          <tr>
+            <th>State Name</th>
+            <th>WQI</th>
+            <th>Ranking</th>
+            <th>Water Body Type</th>
+            <th>Avg BOD</th>
+            <th>Avg Coliform</th>
+          </tr>
+          <tr>
+            <td>UTTAR PRADESH</td>
+            <td>0.1373</td>
+            <td>1</td>
+            <td>RIVER</td>
+            <td>1.25</td>
+            <td>450</td>
+          </tr>
+          <tr>
+            <td>JHARKHAND</td>
+            <td>0.1442</td>
+            <td>2</td>
+            <td>CANAL</td>
+            <td>2.15</td>
+            <td>680</td>
+          </tr>
+          <tr>
+            <td>HARYANA</td>
+            <td>0.1445</td>
+            <td>0.1445</td>
+            <td>3</td>
+            <td>WTP RAW WATER</td>
+            <td>1.80</td>
+            <td>520</td>
+          </tr>
+          <tr>
+            <td>GOA</td>
+            <td>0.1494</td>
+            <td>4</td>
+            <td>CANAL</td>
+            <td>2.05</td>
+            <td>2,719</td>
+          </tr>
+          <tr>
+            <td>ASSAM</td>
+            <td>0.1499</td>
+            <td>5</td>
+            <td>LAKE</td>
+            <td>4.23</td>
+            <td>1,641</td>
+          </tr>
+        </table>
+      </div>
+      <div class="caption"><strong>Source:</strong> Google Sheets - Cleaned_Indian_water_data sheet. Sample shows first 5 states ranked by WQI with corresponding water quality metrics after cleaning and normalization.</div>
+    </div>
+
+    <!-- WQI Analysis Section -->
+    <div class="section" id="wqi-analysis">
+      <h2 class="section-title">Analysis Method 1: Water Quality Index (WQI)</h2>
+      <div class="section-desc">
+        The Water Quality Index (WQI) is a composite scoring methodology that synthesizes multiple pollution indicators into a single, standardized metric. This enables objective, data-driven ranking of geographic regions and specific monitoring stations. The WQI combines four critical parameters weighted by their environmental significance: BOD (30%), pH (20%), Fecal Coliform (30%), and Total Coliform (20%). Each parameter is normalized to a 0-1 scale before aggregation, ensuring comparability across vastly different measurement units and ranges. <strong>Higher WQI scores indicate poorer water quality.</strong>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <img class="chart-img" src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/0c2b7a7e-ee76-429f-bfb2-6f838604626b" alt="WQI by State">
+          <div class="caption"><strong>Figure 1: State-wise Water Quality Index Rankings</strong><br>Bar chart ranking all 17 states by WQI score. Delhi emerges as an extreme outlier with WQI = 0.697, nearly 3× higher than the second-worst state (Telangana, 0.211). This visualization demonstrates the stark geographic concentration of India's water quality crisis in the Indo-Gangetic plain.</div>
+        </div>
+        <div class="col">
+          <img class="chart-img" src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/8a869c67-9bcf-45b2-ad99-331f12e74073" alt="WQI by Station">
+          <div class="caption"><strong>Figure 2: Station-wise WQI Rankings (All 194 Stations)</strong><br>Scatter plot of WQI scores for each of the 194 individual monitoring stations. The chart reveals extreme heterogeneity: while most stations cluster in the 0.10–0.20 range (relatively clean), a small number of specific sites—primarily drains and river stretches in Delhi and Haryana—exceed 0.5 (severe contamination). This granular view is essential for targeted remediation efforts.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>WQI Calculation Formula</h4>
+        <p style="color: var(--text-secondary); font-family: monospace; background: #0f172a; padding: 1em; border-radius: 6px; overflow-x: auto;">
+          WQI = 0.3 × (BOD_max / BOD_max_global) + 0.2 × (pH_max / pH_max_global) + 0.3 × (FC_max / FC_max_global) + 0.2 × (TC_max / TC_max_global)
+        </p>
+        <p style="color: var(--text-secondary);">Where: BOD = Biochemical Oxygen Demand (mg/L), FC = Fecal Coliform (MPN/100ml), TC = Total Coliform (MPN/100ml), _max denotes maximum recorded value, and _max_global denotes maximum across entire dataset.</p>
+      </div>
+    </div>
+
+    <!-- Water Vulnerability Section -->
+    <div class="section" id="vulnerability">
+      <h2 class="section-title">Analysis Method 2: Water Vulnerability Score</h2>
+      <div class="section-desc">
+        The Water Vulnerability Score extends beyond WQI by incorporating five key parameters to create a more comprehensive risk assessment. This metric is particularly valuable for ecosystem-level analysis, identifying which water body types (rivers, drains, lakes, etc.) face the greatest multi-faceted contamination burden. The methodology weighs BOD (25%), Fecal Coliform (25%), Total Coliform (20%), Nitrate-N (15%), and Conductivity (15%)—each normalized to 0-1 scale. <strong>Higher vulnerability scores indicate greater pollution risk and ecosystem stress.</strong>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <img class="chart-img" src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/563ba511-0232-4a1e-8b87-b21d49165b98" alt="Vulnerability by Water Body Type">
+          <div class="caption"><strong>Figure 3: Water Vulnerability Ranking by Water Body Type</strong><br>This bar chart reveals a critical two-tier system in India's aquatic network. Drains (0.0699) are the most vulnerable, followed distantly by Canals (0.0997), confirming they function as primary waste conduits. In contrast, Groundwater, Tanks, and Lakes show vulnerability scores below 0.04, indicating relative protection. This disparity is the key insight driving targeted intervention strategies.</div>
+        </div>
+        <div class="col">
+          <img class="chart-img" src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/b251d9c1-645b-4edc-a819-9606a159cc65" alt="Vulnerability by State">
+          <div class="caption"><strong>Figure 4: State-wise Water Vulnerability Scores</strong><br>Delhi dominates with a vulnerability score of 0.5106—an order of magnitude higher than most other states. The Indo-Gangetic plain cluster (Delhi, Haryana, Uttar Pradesh, Rajasthan) shows consistently elevated scores, suggesting interconnected, large-scale pollution challenges driven by shared river systems, high population density, and industrial activity.</div>
+        </div>
+      </div>
+      <div>
+        <img class="chart-img" src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/bce99fa7-d9c6-466b-b258-b94933f52137" alt="Station-wise Vulnerability">
+        <div class="caption"><strong>Figure 5: Station-wise Water Vulnerability Scores (All 194 Stations)</strong><br>Detailed ranking of every monitoring station by vulnerability. A handful of critical hotspots—particularly Ghazipur Drain (Delhi), Hindon River (Haryana), and select stations in Tamil Nadu—exhibit catastrophic scores exceeding 0.15. These sites represent emergency intervention priorities where remediation would yield maximum national impact.</div>
+      </div>
+      <div class="card">
+        <h4>Vulnerability Score Calculation Formula</h4>
+        <p style="color: var(--text-secondary); font-family: monospace; background: #0f172a; padding: 1em; border-radius: 6px; overflow-x: auto;">
+          Vulnerability = 0.25 × (BOD_max / BOD_max_global) + 0.25 × (FC_max / FC_max_global) + 0.20 × (TC_max / TC_max_global) + 0.15 × (NO3-N_max / NO3-N_max_global) + 0.15 × (Cond_max / Cond_max_global)
+        </p>
+        <p style="color: var(--text-secondary);">This five-parameter approach captures organic (BOD), bacteriological (FC, TC), chemical (NO3-N), and inorganic (Conductivity) contamination dimensions, providing a holistic vulnerability picture.</p>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="section" id="results">
+      <h2 class="section-title">Critical Findings & Recommendations</h2>
+      <div class="section-desc">
+        The integrated analysis reveals India's water quality crisis is not uniformly distributed but is concentrated in specific geographic and ecosystem hotspots. Both WQI and Vulnerability analyses converge on actionable insights for strategic intervention.
+      </div>
+
+      <h3 style="color: var(--primary-accent); margin-top: 1.5em;">Problem 1: State-Level Pollution Hotspots</h3>
+      <div class="columns">
+        <div class="col card">
+          <h4>Top 5 Worst States (by WQI)</h4>
+          <table style="margin-top: 0;">
+            <tr><th>Rank</th><th>State</th><th>WQI Score</th><th>Risk Level</th></tr>
+            <tr><td>1</td><td><strong>DELHI</strong></td><td><strong>0.697</strong></td><td style="color: #ff6b6b;"><strong>CRITICAL</strong></td></tr>
+            <tr><td>2</td><td>TELANGANA</td><td>0.211</td><td style="color: #ffa94d;">HIGH</td></tr>
+            <tr><td>3</td><td>TAMIL NADU</td><td>0.202</td><td style="color: #ffa94d;">HIGH</td></tr>
+            <tr><td>4</td><td>MAHARASHTRA</td><td>0.176</td><td style="color: #ffa94d;">HIGH</td></tr>
+            <tr><td>5</td><td>MADHYA PRADESH</td><td>0.174</td><td style="color: #ffa94d;">HIGH</td></tr>
+          </table>
+        </div>
+        <div class="col card">
+          <h4>Top 5 Best States (by WQI)</h4>
+          <table style="margin-top: 0;">
+            <tr><th>Rank</th><th>State</th><th>WQI Score</th><th>Risk Level</th></tr>
+            <tr><td>17</td><td>UTTAR PRADESH</td><td>0.137</td><td style="color: #51cf66;">GOOD</td></tr>
+            <tr><td>16</td><td>JHARKHAND</td><td>0.144</td><td style="color: #51cf66;">GOOD</td></tr>
+            <tr><td>15</td><td>HARYANA</td><td>0.145</td><td style="color: #51cf66;">GOOD</td></tr>
+            <tr><td>14</td><td>GOA</td><td>0.149</td><td style="color: #51cf66;">GOOD</td></tr>
+            <tr><td>13</td><td>ASSAM</td><td>0.150</td><td style="color: #51cf66;">GOOD</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <h3 style="color: var(--primary-accent); margin-top: 1.5em;">Problem 2: Water Body Type Vulnerability</h3>
+      <div class="columns">
+        <div class="col card">
+          <h4>Most Vulnerable Water Bodies</h4>
+          <ul>
+            <li><strong>Drains:</strong> 0.0699 ⚠️ Highest priority (primary waste conduits)</li>
+            <li><strong>Canals:</strong> 0.0997 (Secondary contamination routes)</li>
+            <li><strong>Rivers:</strong> 0.0370 (Affected but more resilient)</li>
+            <li><strong>Creeks:</strong> 0.1651 (Coastal pollution hotspots)</li>
+            <li><strong>Beaches:</strong> 0.1548 (Marine ecosystem stress)</li>
+          </ul>
+        </div>
+        <div class="col card">
+          <h4>Protected Water Bodies</h4>
+          <ul>
+            <li><strong>Water Treatment Plants:</strong> 0.0079 (Most protected)</li>
+            <li><strong>Ponds:</strong> 0.0220 (Well-maintained)</li>
+            <li><strong>Lakes:</strong> 0.0340 (Relatively clean)</li>
+            <li><strong>Groundwater:</strong> 0.0059 (Least exposed)</li>
+          </ul>
+        </div>
+      </div>
+
+      <hr>
+
+      <h3 style="color: var(--primary-accent); margin-top: 1.5em;">Strategic Recommendations for Implementation</h3>
+
+      <div class="card">
+        <h4>Recommendation 1: Differentiated Resource Allocation Based on WQI</h4>
+        <p style="color: var(--text-secondary);">
+          <strong>Action:</strong> The Ministry of Jal Shakti and CPCB should adopt the WQI ranking as the primary tool for distributing central environmental funds. States in the Critical category (Delhi, Telangana, Tamil Nadu) should receive 3–5× proportionally higher allocations from schemes like the National Mission for Clean Ganga (NMCG) and AMRUT.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Feasibility:</strong> Highly feasible—leverages existing funding mechanisms and administrative infrastructure. Requires only policy reorientation, not new expenditures.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Expected Impact:</strong> Shift from uniform to targeted allocation could increase intervention effectiveness by 60–80%.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>Recommendation 2: Mandate Real-Time Continuous Monitoring (OCEMS)</h4>
+        <p style="color: var(--text-secondary);">
+          <strong>Action:</strong> Implement Online Continuous Effluent Monitoring Systems (OCEMS) at all major industrial outlets and Sewage Treatment Plant (STP) outfalls in the three highest-risk states (Delhi, Haryana, Telangana) within 24 months. Data should be published on a public dashboard updated in real-time.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Feasibility:</strong> Technologically mature; OCEMS is established technology. Phased implementation can manage costs (~₹2–5 Cr per state for core systems).
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Expected Impact:</strong> Shift enforcement from reactive (episodic manual checks) to proactive (continuous compliance). Improves accountability by 90%+.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>Recommendation 3: National Mission for Urban Drain Remediation</h4>
+        <p style="color: var(--text-secondary);">
+          <strong>Action:</strong> Launch a dedicated central mission targeting
+        the 10 most vulnerable drains (Ghazipur Drain, Hindon River, etc.) with integrated treatment technologies. Target: 50% reduction in Vulnerability Score within 3 years.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Feasibility:</strong> Highly specific and actionable. Pilot phase on 5 drains is financially and logistically feasible (~₹50–100 Cr). Success creates a replicable model for nationwide scaling.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Expected Impact:</strong> Direct, measurable improvement in water quality at epicenters of contamination. Serves as visible proof-of-concept for broader national initiative.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>Recommendation 4: Mandatory Industrial Effluent Pre-Treatment (Source Segregation Policy)</h4>
+        <p style="color: var(--text-secondary);">
+          <strong>Action:</strong> State Pollution Control Boards in hotspot states (Delhi, Haryana, Telangana) should implement mandatory Source Segregation Policies requiring all industrial clusters to pre-treat effluents to national standards before discharge into municipal drains. This separates industrial waste streams from domestic sewage, enabling specialized treatment.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Feasibility:</strong> Policy-based; leverages existing environmental laws. Places financial responsibility on industrial polluters rather than public coffers. Enforceable via the proposed OCEMS network.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Expected Impact:</strong> Reduces multi-source contamination complexity; enables tailored treatment solutions. Compliance measurable in real-time via OCEMS data.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>Recommendation 5: Dynamic Quarterly WQI Updates & Adaptive Policy</h4>
+        <p style="color: var(--text-secondary);">
+          <strong>Action:</strong> Establish a quarterly data pipeline that recalculates WQI and Vulnerability Scores using fresh CPCB monitoring data. Publish updated rankings and adjust funding/enforcement priorities accordingly. This creates dynamic, evidence-driven resource allocation rather than static, outdated policies.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Feasibility:</strong> Technically straightforward; automatable via Python/Google Sheets. Minimal additional cost; primarily operational overhead.
+        </p>
+        <p style="color: var(--text-secondary);">
+          <strong>Expected Impact:</strong> Ensures interventions remain aligned with current conditions. Early warning system for emerging contamination hotspots. Holds agencies accountable via transparent, periodic scorecards.
+        </p>
+      </div>
+    </div>
+
+    <!-- Conclusion Section -->
+    <div class="section" id="conclusion">
+      <h2 class="section-title">Conclusion: From Data to Impact</h2>
+      <div class="section-desc">
+        This comprehensive analysis of 2,901 water quality records across 194 Indian monitoring stations reveals a crisis that is neither uniformly distributed nor intractable. The crisis is geographically concentrated in the Indo-Gangetic plain and ecosystemically concentrated in surface water conduits (drains and rivers).
+      </div>
+      <div class="card">
+        <h4>Key Takeaways</h4>
+        <ul>
+          <li><strong>Delhi represents a water quality emergency</strong> with a WQI score (0.697) and vulnerability score (0.5106) that are orders of magnitude worse than national peers, indicating systemic failure in pollution control infrastructure.</li>
+          <li><strong>Urban drains are the primary contamination vectors,</strong> not dispersed sources. A small number of specific sites (Ghazipur Drain, Hindon River, etc.) account for disproportionate contamination. Targeting these hotspots yields maximum national impact.</li>
+          <li><strong>Data-driven differentiation is feasible and necessary.</strong> Uniform, one-size-fits-all policies have failed; WQI and Vulnerability rankings enable evidence-based resource allocation that matches intervention intensity to regional need.</li>
+          <li><strong>Real-time monitoring transforms accountability.</strong> OCEMS systems make compliance visible and continuous, shifting environmental enforcement from reactive episodic checks to proactive continuous oversight.</li>
+          <li><strong>Multi-stakeholder coordination is essential.</strong> Coordinated action across Jal Shakti, CPCB, State Pollution Control Boards, and municipal authorities is required for systemic change.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4>Path Forward</h4>
+        <p style="color: var(--text-secondary);">
+          The shift from reactive to proactive water management requires embedding data-driven methodologies—such as WQI and Vulnerability Scores—into the core of environmental governance. By implementing these five strategic recommendations, India can transform its water quality crisis into an opportunity for leadership in smart, evidence-based environmental management. Success hinges not on new technology but on institutional will to prioritize based on data and accountability based on continuous monitoring.
+        </p>
+      </div>
+    </div>
+
+    <!-- Resources & Downloads Section -->
+    <div class="section" id="resources">
+      <h2 class="section-title">Resources & Downloads</h2>
+      <div class="section-desc">
+        Access the complete project data, code, analysis files, and supporting documentation through the links below.
+      </div>
+      <div class="columns">
+        <div class="col">
+          <h4>Datasets & Reports</h4>
+          <ul>
+            <li><a href="https://www.kaggle.com/datasets/rishabchitloor/indian-water-quality-data-2021-2023" target="_blank">Original Dataset (Kaggle)</a> — Raw CPCB water quality data</li>
+            <li><a href="https://docs.google.com/spreadsheets/d/1R5ocuS49A0c5EwfoTvtEfP39BIwNTvE7t0piHV87ZPo/edit?pli=1&gid=737329061" target="_blank">Cleaned Working Dataset (Google Sheets)</a> — Processed, validated data ready for analysis</li>
+            <li><a href="file:///C:/Users/jnana/Downloads/Jnanadyuti%20Patra%20(Roll%20No.%2024f1002349)%20-%20IITM%20BDM%20-%20Project%20Final%20Report.pdf" target="_blank">📄 Download Final Report (PDF)</a> — Complete 23-page technical report</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h4>Code & Analysis</h4>
+          <ul>
+            <li><a href="https://github.com/Jnanadyuti-Patra/Waters-Of-India_IITM-BDM-Project" target="_blank">GitHub Repository</a> — Full source code, analysis scripts, and documentation</li>
+            <li><a href="https://colab.research.google.com/drive/1eRv3J7ENtlOFqo4N50FwlRkv-8DoU8Ik?usp=sharing" target="_blank">Google Colab Notebook</a> — Interactive Python analysis with visualizations</li>
+          </ul>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="contact-info">
+        <h4>Contact & Connect</h4>
+        <p><strong>Author:</strong> Jnanadyuti Patra</p>
+        <p><strong>Roll Number:</strong> 24f1002349</p>
+        <p><strong>Program:</strong> IITM Online BS Degree - Business Data Management (BDM) Capstone</p>
+        <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/jnanadyutipatra" target="_blank">www.linkedin.com/in/jnanadyutipatra</a></p>
+        <p><strong>GitHub:</strong> <a href="https://github.com/Jnanadyuti-Patra" target="_blank">github.com/Jnanadyuti-Patra</a></p>
+        <p style="margin-top: 1.2em; font-size: 0.95em; color: var(--text-muted);">
+          For inquiries, collaboration proposals, or feedback on this analysis, please reach out via LinkedIn or visit the GitHub repository for the latest updates.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="margin-top: 3em; padding-top: 2em; border-top: 1px solid rgba(56,189,248,0.15); text-align: center; color: var(--text-muted); font-size: 0.9em;">
+      <p>
+        <strong>Waters of India: A Data-Driven Analysis of Pollution and Water Quality for Strategic Intervention</strong><br>
+        BDM Capstone Project | Indian Institute of Technology, Madras<br>
+        © 2025 Jnanadyuti Patra. All rights reserved.<br>
+        <span style="font-size: 0.85em;">Last Updated: November 2025 | Dashboard Version 1.0</span>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>
